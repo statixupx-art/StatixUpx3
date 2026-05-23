@@ -13,6 +13,7 @@
             --neon-green: #a6ff00;
             --text-gray: #a0aec0;
             --border-glow: rgba(0, 242, 255, 0.2);
+            --neon-red: #ff4a4a;
         }
 
         body {
@@ -150,8 +151,8 @@
         }
 
         .btn-logout {
-            border: 1px solid #ff4a4a;
-            color: #ff4a4a;
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
             padding: 8px 15px;
             font-size: 11px;
             margin-top: 0;
@@ -159,7 +160,7 @@
         }
 
         .btn-logout:hover {
-            background: #ff4a4a;
+            background: var(--neon-red);
             color: white;
             box-shadow: 0 0 25px rgba(255, 74, 74, 0.4);
         }
@@ -235,10 +236,38 @@
             padding-top: 20px;
         }
 
+        .table-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-clear-all {
+            background: transparent;
+            border: 1px dashed rgba(255, 74, 74, 0.4);
+            color: var(--text-gray);
+            padding: 4px 10px;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            text-transform: none;
+            font-family: inherit;
+            letter-spacing: 0;
+        }
+
+        .btn-clear-all:hover {
+            background: rgba(255, 74, 74, 0.1);
+            color: var(--neon-red);
+            border-color: var(--neon-red);
+            box-shadow: none;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
             font-size: 13px;
         }
 
@@ -255,6 +284,26 @@
             padding: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             color: #e2e8f0;
+        }
+
+        .btn-delete-row {
+            background: transparent;
+            border: none;
+            color: rgba(255, 74, 74, 0.6);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            margin: 0;
+            width: auto;
+            display: inline-block;
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        .btn-delete-row:hover {
+            background: transparent;
+            color: var(--neon-red);
+            box-shadow: none;
+            transform: scale(1.2);
         }
 
         .total-row {
@@ -397,7 +446,10 @@
         </div>
 
         <div class="table-container">
-            <span style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 12px; letter-spacing: 1px;">📊 MAPA DE CARGA ACUMULADO</span>
+            <div class="table-header-flex">
+                <span style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 12px; letter-spacing: 1px;">📊 MAPA DE CARGA ACUMULADO</span>
+                <button onclick="limparTodaLista()" class="btn-clear-all">🧹 Limpar Tudo</button>
+            </div>
             <table id="tabela-dispositivos">
                 <thead>
                     <tr>
@@ -406,6 +458,7 @@
                         <th>Tempo</th>
                         <th>Consumo</th>
                         <th>Custo Estimado</th>
+                        <th style="width: 40px; text-align: center;">Ação</th>
                     </tr>
                 </thead>
                 <tbody id="lista-corpo">
@@ -414,7 +467,7 @@
                     <tr style="border-top: 2px solid var(--neon-green);">
                         <td colspan="3" style="font-family: 'Orbitron'; color: white; padding-top: 15px;">TOTAL ACUMULADO DA RESIDÊNCIA:</td>
                         <td id="total-kwh-geral" style="padding-top:15px; color:var(--neon-blue); font-weight:bold;">0.00 kWh</td>
-                        <td id="total-custo-geral" class="total-value total-row" style="padding-top:15px;">R$ 0,00</td>
+                        <td id="total-custo-geral" class="total-value total-row" style="padding-top:15px;" colspan="2">R$ 0,00</td>
                     </tr>
                 </tfoot>
             </table>
@@ -442,7 +495,6 @@
 
         document.getElementById('welcome-message').innerText = `OPERADOR: ${nome.toUpperCase()}`;
         
-        // Transição suave com fade-out e fade-in
         const authSection = document.getElementById('section-auth');
         const dashSection = document.getElementById('section-dashboard');
         
@@ -507,24 +559,68 @@
         const corpoTabela = document.getElementById('lista-corpo');
         const novaLinha = document.createElement('tr');
 
+        // Salvando os dados matemáticos em atributos do HTML da linha para conseguir subtrair depois caso exclua
+        novaLinha.dataset.kwh = consumoKwh;
+        novaLinha.dataset.custo = custoTotal;
+
         novaLinha.innerHTML = `
             <td>${aparelho}</td>
             <td>${potencia} W</td>
             <td>${horas}h/dia</td>
             <td style="color: var(--neon-blue);">${consumoKwh.toFixed(2)} kWh</td>
             <td style="color: var(--neon-green); font-weight: bold;">R$ ${custoTotal.toFixed(2).replace('.', ',')}</td>
+            <td style="text-align: center;"><button class="btn-delete-row" onclick="removerDispositivo(this)" title="Remover item">🗑️</button></td>
         `;
         corpoTabela.appendChild(novaLinha);
 
         totalKwhGeral += consumoKwh;
         totalCustoGeral += custoTotal;
 
-        document.getElementById('total-kwh-geral').innerText = totalKwhGeral.toFixed(2) + " kWh";
-        document.getElementById('total-custo-geral').innerText = "R$ " + totalCustoGeral.toFixed(2).replace('.', ',');
+        atualizarTotaisTela();
 
         document.getElementById('aparelho').value = '';
         document.getElementById('potencia').value = '';
         document.getElementById('horas').value = '';
+    }
+
+    function removerDispositivo(botao) {
+        const linha = botao.closest('tr');
+        
+        // Pega os valores armazenados na linha antes de deletar
+        const kwhRemover = parseFloat(linha.dataset.kwh);
+        const custoRemover = parseFloat(linha.dataset.custo);
+        
+        // Subtrai do cálculo geral global
+        totalKwhGeral -= kwhRemover;
+        totalCustoGeral -= custoRemover;
+        
+        // Se der algum valor negativo por erro de arredondamento, zera
+        if(totalKwhGeral < 0) totalKwhGeral = 0;
+        if(totalCustoGeral < 0) totalCustoGeral = 0;
+
+        // Remove a linha visualmente da tabela
+        linha.remove();
+        
+        // Atualiza o rodapé com os novos valores reduzidos
+        atualizarTotaisTela();
+        
+        // Oculta o painel de diagnóstico imediato caso queira limpar a última referência
+        document.getElementById('resultado-imediato').style.display = "none";
+    }
+
+    function limparTodaLista() {
+        if(confirm("Deseja realmente limpar todos os dispositivos mapeados nesta sessão?")) {
+            document.getElementById('lista-corpo').innerHTML = '';
+            totalKwhGeral = 0;
+            totalCustoGeral = 0;
+            atualizarTotaisTela();
+            document.getElementById('resultado-imediato').style.display = "none";
+        }
+    }
+
+    function atualizarTotaisTela() {
+        document.getElementById('total-kwh-geral').innerText = totalKwhGeral.toFixed(2) + " kWh";
+        document.getElementById('total-custo-geral').innerText = "R$ " + totalCustoGeral.toFixed(2).replace('.', ',');
     }
 </script>
 
