@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statix | Monitor de Energia</title>
+    <title>Statix | Core System</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #050a0f;
-            --card-bg: rgba(10, 20, 30, 0.8);
+            --card-bg: rgba(10, 20, 30, 0.85);
             --neon-blue: #00f2ff;
             --neon-green: #a6ff00;
+            --neon-purple: #9d4edd;
             --text-gray: #a0aec0;
+            --border-glow: rgba(0, 242, 255, 0.2);
         }
 
         body {
             background-color: var(--bg-dark);
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(166, 255, 0, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(166, 255, 0, 0.06) 0%, transparent 40%);
             color: #ffffff;
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -27,22 +29,23 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glow);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 255, 0.05);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 242, 255, 0.05);
             position: relative;
             overflow: hidden;
+            transition: all 0.5s ease-in-out;
         }
 
-        /* Efeito de linha tecnológica no topo */
         .container::before {
             content: "";
             position: absolute;
@@ -55,23 +58,23 @@
 
         .header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .logo-text {
             font-family: 'Orbitron', sans-serif;
             font-size: 42px;
-            letter-spacing: 4px;
+            letter-spacing: 6px;
             margin: 0;
             background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
+            filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.4));
         }
 
         .description {
             color: var(--text-gray);
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.6;
             margin-top: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -79,15 +82,15 @@
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
             font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--neon-blue);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -95,27 +98,28 @@
         .input-hint {
             font-size: 11px;
             color: var(--text-gray);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: block;
             font-style: italic;
         }
 
-        input {
+        input, select {
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding: 12px 15px;
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
             transition: all 0.3s;
+            box-sizing: border-box;
         }
 
-        input:focus {
+        input:focus, select:focus {
             border-color: var(--neon-green);
-            background: rgba(166, 255, 0, 0.05);
-            box-shadow: 0 0 15px rgba(166, 255, 0, 0.1);
+            background: rgba(166, 255, 0, 0.04);
+            box-shadow: 0 0 15px rgba(166, 255, 0, 0.15);
         }
 
         .grid-2 {
@@ -129,9 +133,9 @@
             background: transparent;
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
-            padding: 15px;
+            padding: 14px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -139,55 +143,130 @@
             cursor: pointer;
             transition: all 0.4s;
             margin-top: 10px;
-            position: relative;
         }
 
         button:hover {
             background: var(--neon-green);
             color: var(--bg-dark);
-            box-shadow: 0 0 30px rgba(166, 255, 0, 0.4);
+            box-shadow: 0 0 25px rgba(166, 255, 0, 0.4);
         }
 
-        .result-panel {
-            margin-top: 30px;
-            background: rgba(0, 242, 255, 0.05);
-            border-radius: 12px;
-            padding: 25px;
-            border-left: 4px solid var(--neon-blue);
+        /* Atalhos Rápidos */
+        .shortcuts {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .shortcut-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            color: var(--neon-blue);
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shortcut-btn:hover {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+
+        /* Seções Ativas/Inativas */
+        .app-section {
             display: none;
-            animation: slideIn 0.5s ease;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+        .app-section.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Dashboard de Resultados e Tabelas */
+        .result-panel {
+            margin-top: 25px;
+            background: rgba(0, 242, 255, 0.04);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--neon-blue);
         }
 
         .result-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--neon-blue);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .insight-box {
+            margin-top: 12px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .insight-high { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        .insight-low { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; }
+
+        .table-container {
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            font-size: 11px;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+
+        .total-row {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(166, 255, 0, 0.3);
+            font-weight: bold;
+        }
+
+        .welcome-badge {
+            text-align: right;
+            font-size: 12px;
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
             margin-bottom: 15px;
         }
 
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 15px;
-        }
-
-        .total-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--neon-green);
-            text-shadow: 0 0 10px rgba(166, 255, 0, 0.3);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         footer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 10px;
+            margin-top: 30px;
+            font-size: 9px;
             color: var(--text-gray);
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -197,81 +276,221 @@
 <body>
 
 <div class="container">
+    
     <div class="header">
         <h1 class="logo-text">STATIX</h1>
         <div class="description">
-            Plataforma inteligente de monitoramento energético para controle de consumo residencial e otimização de custos em tempo real.
+            Plataforma Inteligente Cibernética para Monitoramento, Rastreamento e Auditoria de Consumo Energético Residencial.
         </div>
     </div>
 
-    <div class="form-group">
-        <label>Identificação do Dispositivo</label>
-        <span class="input-hint">Informe o nome do aparelho para rastrear o impacto individual na rede.</span>
-        <input type="text" id="aparelho" placeholder="Ex: Ar Condicionado Central">
-    </div>
-
-    <div class="form-group">
-        <label>Potência Nominal (Watts)</label>
-        <span class="input-hint">Consulte o rótulo do fabricante para saber a exigência energética do equipamento.</span>
-        <input type="number" id="potencia" placeholder="Ex: 2200">
-    </div>
-
-    <div class="grid-2">
+    <div id="section-auth" class="app-section active">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <span style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 14px; letter-spacing: 1px;">[ AUTENTICAÇÃO REQUERIDA NO MAINFRAME ]</span>
+        </div>
+        
         <div class="form-group">
-            <label>Ciclo Diário (Horas)</label>
-            <span class="input-hint">Tempo estimado de atividade contínua ou alternada por dia.</span>
-            <input type="number" id="horas" placeholder="Ex: 6">
+            <label>Nome Completo do Operador</label>
+            <span class="input-hint">Insira sua identificação de usuário para registro no banco de dados.</span>
+            <input type="text" id="user-name" placeholder="Ex: Amanda Martins França">
         </div>
 
         <div class="form-group">
-            <label>Frequência Mensal (Dias)</label>
-            <span class="input-hint">Quantidade de dias ativos dentro de um ciclo de fatura de 30 dias.</span>
-            <input type="number" id="dias" value="30">
+            <label>Endereço / Unidade Residencial</label>
+            <span class="input-hint">Vincule o cadastro à rede elétrica física do seu domicílio.</span>
+            <input type="text" id="user-address" placeholder="Ex: Av. Paulista, 1200 - Apto 42">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Código de Acesso (Senha)</label>
+                <span class="input-hint">Defina uma credencial de segurança.</span>
+                <input type="password" id="user-pass" placeholder="••••••••">
+            </div>
+
+            <div class="form-group">
+                <label>Região de Tarifação (Bandeira)</label>
+                <span class="input-hint">Define o custo base do kWh local.</span>
+                <select id="user-flag">
+                    <option value="0.85">Verde (Tarifa Base - R$ 0,85/kWh)</option>
+                    <option value="0.95">Amarela (Intermediária - R$ 0,95/kWh)</option>
+                    <option value="1.05">Vermelha (Crítica - R$ 1,05/kWh)</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="autenticarUsuario()">Inicializar e Acessar Sistema</button>
+    </div>
+
+
+    <div id="section-dashboard" class="app-section">
+        <div id="welcome-message" class="welcome-badge">OPERADOR: LOGADO // REDE ATIVA</div>
+        
+        <div style="text-align: center; margin-bottom: 25px;">
+            <span style="font-family: 'Orbitron'; color: var(--neon-green); font-size: 14px; letter-spacing: 1px;">[ DETECTOR E CADASTRAMENTO DE HARDWARE ]</span>
+        </div>
+
+        <label>Presets de Hardware Disponíveis</label>
+        <div class="shortcuts">
+            <div class="shortcut-btn" onclick="carregarPreset('Geladeira Frost Free', 150, 24)">⚡ Geladeira (150W)</div>
+            <div class="shortcut-btn" onclick="carregarPreset('Ar Condicionado', 1800, 8)">⚡ Ar Condicionado (1800W)</div>
+            <div class="shortcut-btn" onclick="carregarPreset('Chuveiro Elétrico', 5500, 1)">⚡ Chuveiro (5500W)</div>
+            <div class="shortcut-btn" onclick="carregarPreset('Computador Gamer', 400, 6)">⚡ PC Gamer (400W)</div>
+        </div>
+
+        <div class="form-group">
+            <label>Identificação do Aparelho / Móvel</label>
+            <span class="input-hint">Nomeie o dispositivo ou o cômodo mapeado na residência.</span>
+            <input type="text" id="aparelho" placeholder="Ex: Geladeira Duplex Cozinha">
+        </div>
+
+        <div class="form-group">
+            <label>Potência de Trabalho (Watts)</label>
+            <span class="input-hint">Exigência nominal de energia elétrica para funcionamento do hardware.</span>
+            <input type="number" id="potencia" placeholder="Ex: 250">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Ciclo Diário (Horas de Uso)</label>
+                <span class="input-hint">Tempo estimado de ativação operacional diária.</span>
+                <input type="number" id="horas" placeholder="Ex: 12" min="0" max="24">
+            </div>
+
+            <div class="form-group">
+                <label>Frequência Crítica (Dias/Mês)</label>
+                <span class="input-hint">Total de dias operados dentro do ciclo de faturamento.</span>
+                <input type="number" id="dias" value="30" min="1" max="31">
+            </div>
+        </div>
+
+        <button onclick="adicionarDispositivo()">Mapear e Adicionar à Rede</button>
+
+        <div id="resultado-imediato" class="result-panel" style="display: none;">
+            <div id="result-title-dinamico" class="result-title">⚡ Diagnóstico Parcial</div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+                <span>Dispositivo: <strong id="res-nome" style="color:white;">-</strong></span>
+                <span>Consumo: <strong id="res-kwh" style="color:var(--neon-blue);">0 kWh</strong></span>
+            </div>
+            <div id="insight-alerta" class="insight-box"></div>
+        </div>
+
+        <div class="table-container">
+            <span style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 12px; letter-spacing: 1px;">📊 MAPA DE CARGA DA RESIDÊNCIA</span>
+            <table id="tabela-dispositivos">
+                <thead>
+                    <tr>
+                        <th>Hardware / Móvel</th>
+                        <th>Potência</th>
+                        <th>Tempo</th>
+                        <th>Consumo Mensal</th>
+                        <th>Custo Estimado</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-corpo">
+                    </tbody>
+                <tfoot>
+                    <tr style="border-top: 2px solid var(--neon-green);">
+                        <td colspan="3" style="font-family: 'Orbitron'; color: white; padding-top: 15px;">TOTAL DA FATURA ACUMULADO:</td>
+                        <td id="total-kwh-geral" style="padding-top:15px; color:var(--neon-blue); font-weight:bold;">0.00 kWh</td>
+                        <td id="total-custo-geral" class="total-value total-row" style="padding-top:15px;">R$ 0,00</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
 
-    <button onclick="processarDados()">Iniciar Diagnóstico</button>
-
-    <div id="resultado" class="result-panel">
-        <div class="result-title">⚡ Diagnóstico Energético</div>
-        <div class="result-row">
-            <span>Hardware analisado:</span>
-            <span id="res-nome" style="color: white;">-</span>
-        </div>
-        <div class="result-row">
-            <span>Consumo Mensal:</span>
-            <span id="res-kwh" style="color: white;">0.00 kWh</span>
-        </div>
-        <div class="result-row" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-            <span style="color: var(--neon-blue); font-family: 'Orbitron';">Impacto Financeiro:</span>
-            <span id="res-custo" class="total-value">R$ 0,00</span>
-        </div>
-    </div>
-
-    <footer>Sistema de Monitoramento Statix v1.0</footer>
+    <footer>Ambiente Computacional Statix v2.0 // Criptografado</footer>
 </div>
 
 <script>
-    function processarDados() {
+    // Variaveis Globais de Controle de Sessão
+    let tarifaUsuario = 0.85;
+    let totalKwhGeral = 0;
+    let totalCustoGeral = 0;
+
+    // Função de Troca de Tela (Auth -> Dashboard)
+    function autenticarUsuario() {
+        const nome = document.getElementById('user-name').value;
+        const endereco = document.getElementById('user-address').value;
+        const senha = document.getElementById('user-pass').value;
+        tarifaUsuario = parseFloat(document.getElementById('user-flag').value);
+
+        if(!nome || !endereco || !senha) {
+            alert("VIOLAÇÃO DE SEGURANÇA: Preencha todos os campos de credenciais para cadastrar no mainframe!");
+            return;
+        }
+
+        // Atualiza a interface com as informações gravadas do operador
+        document.getElementById('welcome-message').innerText = `OPERADOR: ${nome.toUpperCase()} // ENDEREÇO: ${endereco.toUpperCase()}`;
+        
+        // Transição Hacker de telas
+        document.getElementById('section-auth').classList.remove('active');
+        document.getElementById('section-dashboard').classList.add('active');
+    }
+
+    // Atalhos Rápidos para Inputs
+    function carregarPreset(nome, potencia, horas) {
+        document.getElementById('aparelho').value = nome;
+        document.getElementById('potencia').value = potencia;
+        document.getElementById('horas').value = horas;
+        document.getElementById('dias').value = 30;
+    }
+
+    // Processamento matemático e injeção na tabela de móveis
+    function adicionarDispositivo() {
         const aparelho = document.getElementById('aparelho').value;
         const potencia = parseFloat(document.getElementById('potencia').value);
         const horas = parseFloat(document.getElementById('horas').value);
         const dias = parseFloat(document.getElementById('dias').value);
-        
+
         if(!aparelho || isNaN(potencia) || isNaN(horas) || isNaN(dias)) {
-            alert("ERRO DE SISTEMA: Verifique se todos os parâmetros foram preenchidos corretamente.");
+            alert("ERRO DE EXECUÇÃO: Insira parâmetros numéricos válidos nos vetores de cálculo.");
             return;
         }
 
+        // Cálculo Científico de Energia
         const consumoKwh = (potencia * horas * dias) / 1000;
-        const valorTarifa = 0.85; 
-        const custoTotal = consumoKwh * valorTarifa;
+        const custoTotal = consumoKwh * tarifaUsuario;
 
+        // Atualiza Painel Imediato Superior
         document.getElementById('res-nome').innerText = aparelho.toUpperCase();
         document.getElementById('res-kwh').innerText = consumoKwh.toFixed(2) + " kWh";
-        document.getElementById('res-custo').innerText = "R$ " + custoTotal.toFixed(2).replace('.', ',');
+        
+        const insightDiv = document.getElementById('insight-alerta');
+        if(custoTotal > 45) {
+            insightDiv.className = "insight-box insight-high";
+            insightDiv.innerText = "CRÍTICO: Alto índice de carga. Recomendado mitigar tempo de uso diário.";
+        } else {
+            insightDiv.className = "insight-box insight-low";
+            insightDiv.innerText = "ESTÁVEL: Nível de eficiência energética em conformidade com as diretrizes Procel.";
+        }
+        document.getElementById('resultado-imediato').style.display = "block";
 
-        document.getElementById('resultado').style.display = 'block';
+        // Injeta uma nova linha na tabela acumuladora do Imóvel
+        const corpoTabela = document.getElementById('lista-corpo');
+        const novaLinha = document.createElement('tr');
+
+        novaLinha.innerHTML = `
+            <td>${aparelho}</td>
+            <td>${potencia} W</td>
+            <td>${horas}h/dia</td>
+            <td style="color: var(--neon-blue);">${consumoKwh.toFixed(2)} kWh</td>
+            <td style="color: var(--neon-green); font-weight: bold;">R$ ${custoTotal.toFixed(2).replace('.', ',')}</td>
+        `;
+        corpoTabela.appendChild(novaLinha);
+
+        // Atualiza os Grandes Totais da casa
+        totalKwhGeral += consumoKwh;
+        totalCustoGeral += custoTotal;
+
+        document.getElementById('total-kwh-geral').innerText = totalKwhGeral.toFixed(2) + " kWh";
+        document.getElementById('total-custo-geral').innerText = "R$ " + totalCustoGeral.toFixed(2).replace('.', ',');
+
+        // Reseta os campos para a próxima varredura
+        document.getElementById('aparelho').value = '';
+        document.getElementById('potencia').value = '';
+        document.getElementById('horas').value = '';
     }
 </script>
 
