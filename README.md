@@ -1,3 +1,5 @@
+Link para o site do Projeot: https://statixupx-art.github.io/StatixUpx3/
+
 SOBRE O PROJETO
  Nossa equipe desenvolveu este sistema com o objetivo prático de auxiliar os cidadãos no monitoramento e na compreensão do consumo de energia elétrica em suas residências. Sabemos que a conta de luz representa um impacto significativo no orçamento mensal das famílias, e muitas vezes é difícil identificar quais aparelhos são os verdadeiros responsáveis pelo aumento do valor.
 
