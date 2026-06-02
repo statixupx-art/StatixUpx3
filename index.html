@@ -1,161 +1,151 @@
 <script>
-    let tarifaUsuario = 0.85;
-    let totalKwhGeral = 0;
-    let totalCustoGeral = 0;
+let tarifaUsuario = 0.85;
+let totalKwhGeral = 0;
+let totalCustoGeral = 0;
 
-    function autenticarUsuario() {
-        const nome = document.getElementById('user-name').value;
-        const cpf = document.getElementById('user-cpf').value;
-        const celular = document.getElementById('user-phone').value;
-        const email = document.getElementById('user-email').value;
+function autenticarUsuario() {
 
-        if(!nome || !cpf || !celular || !email) {
-            alert("SISTEMA: Preencha todas as informações do morador.");
-            return;
-        }
+    const nome = document.getElementById('user-name').value;
+    const cpf = document.getElementById('user-cpf').value;
+    const celular = document.getElementById('user-phone').value;
+    const email = document.getElementById('user-email').value;
 
-        document.getElementById('welcome-message').innerText = `OPERADOR: ${nome.toUpperCase()}`;
-
-        const authSection = document.getElementById('section-auth');
-        const dashSection = document.getElementById('section-dashboard');
-
-        authSection.style.opacity = '0';
-
-        setTimeout(() => {
-            authSection.classList.remove('active');
-            dashSection.classList.add('active');
-
-            setTimeout(() => {
-                dashSection.style.opacity = '1';
-            }, 50);
-
-        }, 500);
+    if (!nome || !cpf || !celular || !email) {
+        alert("Preencha todos os campos.");
+        return;
     }
 
-    function desautenticarUsuario() {
-        const authSection = document.getElementById('section-auth');
-        const dashSection = document.getElementById('section-dashboard');
+    document.getElementById('welcome-message').innerText =
+        "OPERADOR: " + nome.toUpperCase();
 
-        dashSection.style.opacity = '0';
+    document.getElementById('section-auth').classList.remove('active');
 
-        setTimeout(() => {
-            dashSection.classList.remove('active');
-            authSection.classList.add('active');
+    document.getElementById('section-dashboard').classList.add('active');
+}
 
-            setTimeout(() => {
-                authSection.style.opacity = '1';
-            }, 50);
+function desautenticarUsuario() {
 
-        }, 500);
+    document.getElementById('section-dashboard').classList.remove('active');
+
+    document.getElementById('section-auth').classList.add('active');
+}
+
+function carregarPreset(nome, potencia, horas) {
+
+    document.getElementById('aparelho').value = nome;
+    document.getElementById('potencia').value = potencia;
+    document.getElementById('horas').value = horas;
+    document.getElementById('dias').value = 30;
+}
+
+function adicionarDispositivo() {
+
+    const aparelho = document.getElementById('aparelho').value;
+    const potencia = parseFloat(document.getElementById('potencia').value);
+    const horas = parseFloat(document.getElementById('horas').value);
+    const dias = parseFloat(document.getElementById('dias').value);
+
+    if (!aparelho || isNaN(potencia) || isNaN(horas) || isNaN(dias)) {
+        alert("Preencha os dados corretamente.");
+        return;
     }
 
-    function carregarPreset(nome, potencia, horas) {
-        document.getElementById('aparelho').value = nome;
-        document.getElementById('potencia').value = potencia;
-        document.getElementById('horas').value = horas;
-        document.getElementById('dias').value = 30;
+    const consumoKwh = (potencia * horas * dias) / 1000;
+    const custoTotal = consumoKwh * tarifaUsuario;
+
+    document.getElementById('res-nome').innerText =
+        aparelho.toUpperCase();
+
+    document.getElementById('res-kwh').innerText =
+        consumoKwh.toFixed(2) + " kWh";
+
+    const insightDiv = document.getElementById('insight-alerta');
+
+    if (custoTotal > 40) {
+
+        insightDiv.className = "insight-box insight-high";
+        insightDiv.innerText =
+            "ALERTA: Alto índice de consumo detectado.";
+
+    } else {
+
+        insightDiv.className = "insight-box insight-low";
+        insightDiv.innerText =
+            "ESTÁVEL: Consumo dentro do esperado.";
     }
 
-    function adicionarDispositivo() {
-        const aparelho = document.getElementById('aparelho').value;
-        const potencia = parseFloat(document.getElementById('potencia').value);
-        const horas = parseFloat(document.getElementById('horas').value);
-        const dias = parseFloat(document.getElementById('dias').value);
+    document.getElementById('resultado-imediato').style.display = "block";
 
-        if(!aparelho || isNaN(potencia) || isNaN(horas) || isNaN(dias)) {
-            alert("SISTEMA: Insira parâmetros válidos.");
-            return;
-        }
+    const tabela = document.getElementById('lista-corpo');
 
-        const consumoKwh = (potencia * horas * dias) / 1000;
-        const custoTotal = consumoKwh * tarifaUsuario;
+    const linha = document.createElement('tr');
 
-        document.getElementById('res-nome').innerText = aparelho.toUpperCase();
-        document.getElementById('res-kwh').innerText = consumoKwh.toFixed(2) + " kWh";
+    linha.dataset.kwh = consumoKwh;
+    linha.dataset.custo = custoTotal;
 
-        const insightDiv = document.getElementById('insight-alerta');
+    linha.innerHTML = `
+        <td>${aparelho}</td>
+        <td>${potencia} W</td>
+        <td>${horas}h/dia</td>
+        <td style="color: var(--neon-blue);">
+            ${consumoKwh.toFixed(2)} kWh
+        </td>
+        <td style="color: var(--neon-green); font-weight: bold;">
+            R$ ${custoTotal.toFixed(2).replace('.', ',')}
+        </td>
+        <td style="text-align:center;">
+            <button class="btn-delete-row"
+                onclick="removerDispositivo(this)">
+                🗑️
+            </button>
+        </td>
+    `;
 
-        if(custoTotal > 40) {
-            insightDiv.className = "insight-box insight-high";
-            insightDiv.innerText = "ALERTA: Alto índice de consumo detectado.";
-        } else {
-            insightDiv.className = "insight-box insight-low";
-            insightDiv.innerText = "ESTÁVEL: Consumo dentro do esperado.";
-        }
+    tabela.appendChild(linha);
 
-        document.getElementById('resultado-imediato').style.display = "block";
+    totalKwhGeral += consumoKwh;
+    totalCustoGeral += custoTotal;
 
-        const corpoTabela = document.getElementById('lista-corpo');
-        const novaLinha = document.createElement('tr');
+    atualizarTotaisTela();
 
-        novaLinha.dataset.kwh = consumoKwh;
-        novaLinha.dataset.custo = custoTotal;
+    document.getElementById('aparelho').value = '';
+    document.getElementById('potencia').value = '';
+    document.getElementById('horas').value = '';
+}
 
-        novaLinha.innerHTML = `
-            <td>${aparelho}</td>
-            <td>${potencia} W</td>
-            <td>${horas}h/dia</td>
-            <td style="color: var(--neon-blue);">${consumoKwh.toFixed(2)} kWh</td>
-            <td style="color: var(--neon-green); font-weight: bold;">
-                R$ ${custoTotal.toFixed(2).replace('.', ',')}
-            </td>
-            <td style="text-align: center;">
-                <button class="btn-delete-row" onclick="removerDispositivo(this)">
-                    🗑️
-                </button>
-            </td>
-        `;
+function removerDispositivo(botao) {
 
-        corpoTabela.appendChild(novaLinha);
+    const linha = botao.parentElement.parentElement;
 
-        totalKwhGeral += consumoKwh;
-        totalCustoGeral += custoTotal;
+    totalKwhGeral -= parseFloat(linha.dataset.kwh);
+    totalCustoGeral -= parseFloat(linha.dataset.custo);
 
-        atualizarTotaisTela();
+    linha.remove();
 
-        document.getElementById('aparelho').value = '';
-        document.getElementById('potencia').value = '';
-        document.getElementById('horas').value = '';
-    }
+    atualizarTotaisTela();
+}
 
-    function removerDispositivo(botao) {
-        const linha = botao.closest('tr');
+function limparTodaLista() {
 
-        const kwhRemover = parseFloat(linha.dataset.kwh);
-        const custoRemover = parseFloat(linha.dataset.custo);
+    if (confirm("Deseja limpar todos os dispositivos?")) {
 
-        totalKwhGeral -= kwhRemover;
-        totalCustoGeral -= custoRemover;
+        document.getElementById('lista-corpo').innerHTML = '';
 
-        if(totalKwhGeral < 0) totalKwhGeral = 0;
-        if(totalCustoGeral < 0) totalCustoGeral = 0;
-
-        linha.remove();
+        totalKwhGeral = 0;
+        totalCustoGeral = 0;
 
         atualizarTotaisTela();
 
         document.getElementById('resultado-imediato').style.display = "none";
     }
+}
 
-    function limparTodaLista() {
-        if(confirm("Deseja limpar todos os dispositivos?")) {
+function atualizarTotaisTela() {
 
-            document.getElementById('lista-corpo').innerHTML = '';
+    document.getElementById('total-kwh-geral').innerText =
+        totalKwhGeral.toFixed(2) + " kWh";
 
-            totalKwhGeral = 0;
-            totalCustoGeral = 0;
-
-            atualizarTotaisTela();
-
-            document.getElementById('resultado-imediato').style.display = "none";
-        }
-    }
-
-    function atualizarTotaisTela() {
-        document.getElementById('total-kwh-geral').innerText =
-            totalKwhGeral.toFixed(2) + " kWh";
-
-        document.getElementById('total-custo-geral').innerText =
-            "R$ " + totalCustoGeral.toFixed(2).replace('.', ',');
-    }
+    document.getElementById('total-custo-geral').innerText =
+        "R$ " + totalCustoGeral.toFixed(2).replace('.', ',');
+}
 </script>
