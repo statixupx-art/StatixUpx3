@@ -165,7 +165,6 @@
             box-shadow: 0 0 25px rgba(255, 74, 74, 0.4);
         }
 
-        /* Presets de Hardware */
         .shortcuts {
             display: flex;
             gap: 10px;
@@ -190,7 +189,6 @@
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
         }
 
-        /* Transição Suave de Telas */
         .app-section {
             display: none;
             opacity: 0;
@@ -202,7 +200,6 @@
             opacity: 1;
         }
 
-        /* Painéis e Tabelas */
         .result-panel {
             margin-top: 25px;
             background: rgba(0, 242, 255, 0.04);
@@ -352,40 +349,36 @@
 
     <div id="section-auth" class="app-section active">
         <div style="text-align: center; margin-bottom: 25px;">
-            <span style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 14px; letter-spacing: 1px;">[ AUTENTICAÇÃO REQUERIDA ]</span>
+            <span style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 14px; letter-spacing: 1px;">[ CADASTRO DE MORADOR ]</span>
         </div>
         
         <div class="form-group">
-            <label>Nome Completo do Operador</label>
-            <span class="input-hint">Insira sua identificação de usuário para registro no sistema.</span>
-            <input type="text" id="user-name">
+            <label>Nome Completo</label>
+            <span class="input-hint">Insira a identificação do morador para registro no sistema.</span>
+            <input type="text" id="user-name" placeholder="Ex: João Silva">
         </div>
 
         <div class="form-group">
-            <label>Endereço / Unidade Residencial</label>
-            <span class="input-hint">Vincule o cadastro à sua localidade física.</span>
-            <input type="text" id="user-address">
+            <label>CPF (Apenas números)</label>
+            <span class="input-hint">Necessário 11 dígitos numéricos válidos.</span>
+            <input type="text" id="user-cpf" maxlength="11" placeholder="Ex: 12345678901">
         </div>
 
         <div class="grid-2">
             <div class="form-group">
-                <label>Código de Acesso (Senha)</label>
-                <span class="input-hint">Defina as credenciais de segurança.</span>
-                <input type="password" id="user-pass">
+                <label>Celular</label>
+                <span class="input-hint">Telefone de contato com DDD.</span>
+                <input type="text" id="user-phone" placeholder="Ex: 11999999999">
             </div>
 
             <div class="form-group">
-                <label>Região de Tarifação (Bandeira)</label>
-                <span class="input-hint">Define o custo base do kWh regional.</span>
-                <select id="user-flag">
-                    <option value="0.85">Verde (Tarifa Base - R$ 0,85/kWh)</option>
-                    <option value="0.95">Amarela (Intermediária - R$ 0,95/kWh)</option>
-                    <option value="1.05">Vermelha (Crítica - R$ 1,05/kWh)</option>
-                </select>
+                <label>E-mail</label>
+                <span class="input-hint">Endereço eletrônico para notificações.</span>
+                <input type="email" id="user-email" placeholder="Ex: joao@email.com">
             </div>
         </div>
 
-        <button onclick="autenticarUsuario()">Inicializar e Acessar Painel</button>
+        <button onclick="autenticarUsuario()">Cadastrar Morador e Acessar Painel</button>
     </div>
 
 
@@ -462,7 +455,7 @@
                     </tr>
                 </thead>
                 <tbody id="lista-corpo">
-                    </tbody>
+                </tbody>
                 <tfoot>
                     <tr style="border-top: 2px solid var(--neon-green);">
                         <td colspan="3" style="font-family: 'Orbitron'; color: white; padding-top: 15px;">TOTAL ACUMULADO DA RESIDÊNCIA:</td>
@@ -478,34 +471,66 @@
 </div>
 
 <script>
-    let tarifaUsuario = 0.85;
+    let tarifaUsuario = 0.85; // Tarifa padrão
     let totalKwhGeral = 0;
     let totalCustoGeral = 0;
 
+    // EVENTO DE SUBMISSÃO E INTEGRAÇÃO COM BACK-END (NODE.JS)
     function autenticarUsuario() {
         const nome = document.getElementById('user-name').value;
-        const endereco = document.getElementById('user-address').value;
-        const senha = document.getElementById('user-pass').value;
-        tarifaUsuario = parseFloat(document.getElementById('user-flag').value);
+        const cpf = document.getElementById('user-cpf').value;
+        const celular = document.getElementById('user-phone').value;
+        const email = document.getElementById('user-email').value;
 
-        if(!nome || !endereco || !senha) {
-            alert("SISTEMA: Preencha todas as credenciais para acessar o mainframe.");
+        if(!nome || !cpf || !celular || !email) {
+            alert("SISTEMA: Preencha todas as informações do morador para fins de registro corporativo.");
             return;
         }
 
-        document.getElementById('welcome-message').innerText = `OPERADOR: ${nome.toUpperCase()}`;
-        
-        const authSection = document.getElementById('section-auth');
-        const dashSection = document.getElementById('section-dashboard');
-        
-        authSection.style.opacity = '0';
-        setTimeout(() => {
-            authSection.classList.remove('active');
-            dashSection.classList.add('active');
+        // 1. Estruturação do JSON correspondente à tabela 'moradores' do SQL Server
+        const dadosMorador = {
+            nome_completo: nome,
+            cpf: cpf,
+            celular: celular,
+            email: email
+        };
+
+        // 2. Disparo HTTP POST via Fetch para o Servidor Node.js local
+        fetch('http://localhost:3000/api/moradores', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosMorador)
+        })
+        .then(response => {
+            if(!response.ok) {
+                throw new Error('Falha na resposta do servidor.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Sucesso! Registro inserido no SQL Server:', data);
+            
+            // Transição visual de telas caso a inserção no banco funcione
+            document.getElementById('welcome-message').innerText = `OPERADOR: ${nome.toUpperCase()}`;
+            
+            const authSection = document.getElementById('section-auth');
+            const dashSection = document.getElementById('section-dashboard');
+            
+            authSection.style.opacity = '0';
             setTimeout(() => {
-                dashSection.style.opacity = '1';
-            }, 50);
-        }, 500);
+                authSection.classList.remove('active');
+                dashSection.classList.add('active');
+                setTimeout(() => {
+                    dashSection.style.opacity = '1';
+                }, 50);
+            }, 500);
+        })
+        .catch(erro => {
+            console.error('Erro ao conectar com a API:', erro);
+            alert("SISTEMA: Erro crítico ao persistir dados no SQL Server. Verifique o terminal Node.js.");
+        });
     }
 
     function desautenticarUsuario() {
@@ -559,7 +584,6 @@
         const corpoTabela = document.getElementById('lista-corpo');
         const novaLinha = document.createElement('tr');
 
-        // Salvando os dados matemáticos em atributos do HTML da linha para conseguir subtrair depois caso exclua
         novaLinha.dataset.kwh = consumoKwh;
         novaLinha.dataset.custo = custoTotal;
 
@@ -585,26 +609,17 @@
 
     function removerDispositivo(botao) {
         const linha = botao.closest('tr');
-        
-        // Pega os valores armazenados na linha antes de deletar
         const kwhRemover = parseFloat(linha.dataset.kwh);
         const custoRemover = parseFloat(linha.dataset.custo);
         
-        // Subtrai do cálculo geral global
         totalKwhGeral -= kwhRemover;
         totalCustoGeral -= custoRemover;
         
-        // Se der algum valor negativo por erro de arredondamento, zera
         if(totalKwhGeral < 0) totalKwhGeral = 0;
         if(totalCustoGeral < 0) totalCustoGeral = 0;
 
-        // Remove a linha visualmente da tabela
         linha.remove();
-        
-        // Atualiza o rodapé com os novos valores reduzidos
         atualizarTotaisTela();
-        
-        // Oculta o painel de diagnóstico imediato caso queira limpar a última referência
         document.getElementById('resultado-imediato').style.display = "none";
     }
 
