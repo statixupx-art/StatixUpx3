@@ -4,39 +4,35 @@ const cors = require('cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // Permite que o seu arquivo index.html envie dados para cá
+app.use(cors()); 
 
-// ==========================================
-// CONFIGURAÇÃO DO SEU BANCO DE DADOS LOCAL
-// ==========================================
+
 const config = {
-    user: 'seu_usuario_do_sql',       // ⚠️ Troque pelo seu usuário do SQL Server
-    password: 'sua_senha_do_sql',     // ⚠️ Troque pela sua senha do SQL Server
-    server: 'localhost',              // Mantém localhost se o banco estiver na sua máquina
-    database: 'Statix',               // ⚠️ Coloque o nome exato do banco de dados que você criou
+    user: 'Gustavo Amaro',     
+    password: 'ddjkg1234',     
+    server: 'localhost',              
+    database: 'Statix',              
     options: {
         encrypt: false,
-        trustServerCertificate: true  // Essencial para rodar localmente sem erro de certificado
+        trustServerCertificate: true 
     }
 };
 
-// ==========================================
-// ROTA 1: SALVAR O USUÁRIO (MOMENTO DO LOGIN)
-// ==========================================
+
 app.post('/api/usuarios', async (req, res) => {
     try {
-        // Conecta no SQL Server
+       
         let pool = await sql.connect(config);
         const { nome, endereco, senha } = req.body;
         
-        // Executa o comando SQL (Ajuste o nome das colunas caso estejam diferentes no seu script.sql)
+       
         await pool.request()
             .input('nome', sql.VarChar, nome)
             .input('endereco', sql.VarChar, endereco)
             .input('senha', sql.VarChar, senha)
             .query('INSERT INTO Usuarios (Nome, Endereco, Senha) VALUES (@nome, @endereco, @senha)');
             
-        // Responde ao site que deu tudo certo
+     
         res.status(201).json({ message: "Operador registrado no banco com sucesso!" });
     } catch (err) {
         console.error("Erro no Banco de Dados:", err.message);
@@ -44,15 +40,12 @@ app.post('/api/usuarios', async (req, res) => {
     }
 });
 
-// ==========================================
-// ROTA 2: SALVAR UM ELETRODOMÉSTICO NA LISTA
-// ==========================================
 app.post('/api/dispositivos', async (req, res) => {
     try {
         let pool = await sql.connect(config);
         const { aparelho, potencia, horas, dias } = req.body;
         
-        // Executa o comando SQL para inserir o dispositivo
+      
         await pool.request()
             .input('nome', sql.VarChar, aparelho)
             .input('potencia', sql.Int, potencia)
@@ -67,7 +60,7 @@ app.post('/api/dispositivos', async (req, res) => {
     }
 });
 
-// Inicializa o servidor backend na porta 3000
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`==================================================`);
