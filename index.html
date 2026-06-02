@@ -1,4 +1,227 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statix Energy</title>
+
+    <style>
+        :root {
+            --bg-dark: #050a0f;
+            --card-bg: rgba(10, 20, 30, 0.9);
+            --neon-blue: #00f2ff;
+            --neon-green: #a6ff00;
+            --neon-red: #ff4a4a;
+            --text-gray: #a0aec0;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-dark);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--neon-blue);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            background: var(--neon-green);
+            color: black;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-delete-row {
+            background: var(--neon-red);
+            color: white;
+            width: auto;
+            padding: 5px 10px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            text-align: left;
+        }
+
+        th {
+            color: var(--neon-blue);
+        }
+
+        .app-section {
+            display: none;
+        }
+
+        .app-section.active {
+            display: block;
+        }
+
+        .result-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .insight-high {
+            color: #ff7777;
+        }
+
+        .insight-low {
+            color: #7dff7d;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>STATIX ENERGY</h1>
+
+    <div id="section-auth" class="app-section active">
+
+        <h3>Cadastro do Morador</h3>
+
+        <input type="text" id="user-name" placeholder="Nome">
+        <input type="text" id="user-cpf" placeholder="CPF">
+        <input type="text" id="user-phone" placeholder="Celular">
+        <input type="email" id="user-email" placeholder="Email">
+
+        <button onclick="autenticarUsuario()">
+            Entrar no Sistema
+        </button>
+    </div>
+
+    <div id="section-dashboard" class="app-section">
+
+        <h3 id="welcome-message">
+            OPERADOR
+        </h3>
+
+        <button onclick="desautenticarUsuario()">
+            Sair
+        </button>
+
+        <hr>
+
+        <input type="text" id="aparelho" placeholder="Nome do aparelho">
+
+        <input type="number" id="potencia" placeholder="Potência em watts">
+
+        <input type="number" id="horas" placeholder="Horas por dia">
+
+        <input type="number" id="dias" value="30" placeholder="Dias por mês">
+
+        <button onclick="adicionarDispositivo()">
+            Adicionar Dispositivo
+        </button>
+
+        <div id="resultado-imediato" class="result-panel" style="display:none;">
+
+            <p>
+                Dispositivo:
+                <strong id="res-nome"></strong>
+            </p>
+
+            <p>
+                Consumo:
+                <strong id="res-kwh"></strong>
+            </p>
+
+            <div id="insight-alerta"></div>
+
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Dispositivo</th>
+                    <th>Potência</th>
+                    <th>Uso</th>
+                    <th>Consumo</th>
+                    <th>Custo</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+
+            <tbody id="lista-corpo"></tbody>
+
+            <tfoot>
+                <tr>
+                    <td colspan="3">
+                        TOTAL
+                    </td>
+
+                    <td id="total-kwh-geral">
+                        0 kWh
+                    </td>
+
+                    <td id="total-custo-geral">
+                        R$ 0,00
+                    </td>
+
+                    <td></td>
+                </tr>
+            </tfoot>
+
+        </table>
+
+        <button onclick="limparTodaLista()">
+            Limpar Tudo
+        </button>
+
+    </div>
+
+</div>
+
 <script>
+
 let tarifaUsuario = 0.85;
 let totalKwhGeral = 0;
 let totalCustoGeral = 0;
@@ -30,14 +253,6 @@ function desautenticarUsuario() {
     document.getElementById('section-auth').classList.add('active');
 }
 
-function carregarPreset(nome, potencia, horas) {
-
-    document.getElementById('aparelho').value = nome;
-    document.getElementById('potencia').value = potencia;
-    document.getElementById('horas').value = horas;
-    document.getElementById('dias').value = 30;
-}
-
 function adicionarDispositivo() {
 
     const aparelho = document.getElementById('aparelho').value;
@@ -63,15 +278,15 @@ function adicionarDispositivo() {
 
     if (custoTotal > 40) {
 
-        insightDiv.className = "insight-box insight-high";
+        insightDiv.className = "insight-high";
         insightDiv.innerText =
-            "ALERTA: Alto índice de consumo detectado.";
+            "ALTO CONSUMO DETECTADO";
 
     } else {
 
-        insightDiv.className = "insight-box insight-low";
+        insightDiv.className = "insight-low";
         insightDiv.innerText =
-            "ESTÁVEL: Consumo dentro do esperado.";
+            "CONSUMO ESTÁVEL";
     }
 
     document.getElementById('resultado-imediato').style.display = "block";
@@ -83,23 +298,13 @@ function adicionarDispositivo() {
     linha.dataset.kwh = consumoKwh;
     linha.dataset.custo = custoTotal;
 
-    linha.innerHTML = `
-        <td>${aparelho}</td>
-        <td>${potencia} W</td>
-        <td>${horas}h/dia</td>
-        <td style="color: var(--neon-blue);">
-            ${consumoKwh.toFixed(2)} kWh
-        </td>
-        <td style="color: var(--neon-green); font-weight: bold;">
-            R$ ${custoTotal.toFixed(2).replace('.', ',')}
-        </td>
-        <td style="text-align:center;">
-            <button class="btn-delete-row"
-                onclick="removerDispositivo(this)">
-                🗑️
-            </button>
-        </td>
-    `;
+    linha.innerHTML =
+        "<td>" + aparelho + "</td>" +
+        "<td>" + potencia + " W</td>" +
+        "<td>" + horas + "h/dia</td>" +
+        "<td>" + consumoKwh.toFixed(2) + " kWh</td>" +
+        "<td>R$ " + custoTotal.toFixed(2).replace('.', ',') + "</td>" +
+        "<td><button class='btn-delete-row' onclick='removerDispositivo(this)'>X</button></td>";
 
     tabela.appendChild(linha);
 
@@ -127,17 +332,14 @@ function removerDispositivo(botao) {
 
 function limparTodaLista() {
 
-    if (confirm("Deseja limpar todos os dispositivos?")) {
+    document.getElementById('lista-corpo').innerHTML = '';
 
-        document.getElementById('lista-corpo').innerHTML = '';
+    totalKwhGeral = 0;
+    totalCustoGeral = 0;
 
-        totalKwhGeral = 0;
-        totalCustoGeral = 0;
+    atualizarTotaisTela();
 
-        atualizarTotaisTela();
-
-        document.getElementById('resultado-imediato').style.display = "none";
-    }
+    document.getElementById('resultado-imediato').style.display = "none";
 }
 
 function atualizarTotaisTela() {
@@ -148,4 +350,9 @@ function atualizarTotaisTela() {
     document.getElementById('total-custo-geral').innerText =
         "R$ " + totalCustoGeral.toFixed(2).replace('.', ',');
 }
+
 </script>
+
+</body>
+</html>
+```
